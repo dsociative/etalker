@@ -6,11 +6,11 @@
 -export([talk/2, requests/3]).
 
 
-requests(Pid, Gateway, ClientSocket) ->
+requests(Gateway, ClientSocket, Pid) ->
   case gen_tcp:recv(ClientSocket, 0) of
     {ok, Msg} ->
       Gateway ! {in, Pid, jiffy:decode(Msg)},
-      requests(Pid, Gateway, ClientSocket);
+      requests(Gateway, ClientSocket, Pid);
     {error, Reason} ->
       exit(Reason)
   end.
@@ -19,8 +19,8 @@ requests(Pid, Gateway, ClientSocket) ->
 responses(Gateway, ClientSocket) ->
   receive
     {out, Msg} ->
-      io:format("Response ~p~n", [Msg]),
-      gen_tcp:send(ClientSocket, jiffy:encode(Msg)),
+      io:format("Out ~p~n", [Msg]),
+      gen_tcp:send(ClientSocket, jiffy:encode({Msg})),
       responses(Gateway, ClientSocket);
     {'EXIT', _, _} ->
       Gateway ! {closed, self()}
@@ -29,6 +29,5 @@ responses(Gateway, ClientSocket) ->
 
 talk(Gateway, ClientSocket) ->
   process_flag(trap_exit, true),
-  spawn_link(?MODULE, requests, [self(), Gateway, ClientSocket]),
+  spawn_link(?MODULE, requests, [Gateway, ClientSocket, self()]),
   responses(Gateway, ClientSocket).
-

@@ -30,7 +30,5 @@ tst2() ->
 
 tst3() ->
   Gateway = gateway_test,
-  spawn_link(gateway, start, [Gateway, "ipc:///tmp/gateway", "ipc:///tmp/performer"]),
-  accepter:listen(Gateway, 10555).
-
-
+  spawn_link(gateway, start, [Gateway, "ipc:///home/buildbot/jewels/testing/jewels_testing_gateway", "ipc:///home/buildbot/jewels/testing/jewels_testing_performer"]),
+  accepter:listen(Gateway, 10556).
