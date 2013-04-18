@@ -1,0 +1,1 @@
+[{"command":"user.auth", "uid": "123123123", "cids":["<123>"]}, {"command":"user:disconnect", "cids": ["<312312>"]}]
