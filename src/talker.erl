@@ -23,7 +23,8 @@ responses(Gateway, ClientSocket) ->
       gen_tcp:send(ClientSocket, jiffy:encode({Msg})),
       responses(Gateway, ClientSocket);
     {'EXIT', _, _} ->
-      Gateway ! {closed, self()}
+      Gateway ! {closed, self()},
+      gen_tcp:close(ClientSocket)
   end.
 
 

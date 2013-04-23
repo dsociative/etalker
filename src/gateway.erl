@@ -3,7 +3,7 @@
 -author("dsociative").
 
 %% API
--export([start/3, pid_pack/1, gateway_listen/1]).
+-export([start/3, pid_pack/1, gateway_listen/1, main/0]).
 -define(DISCONNECT_MSG, {[{<<"command">>, <<"user.disconnect">>}]}).
 
 
@@ -78,3 +78,10 @@ loop(Gateway, PerformerSocket) ->
       send(PerformerSocket, Pid, ?DISCONNECT_MSG)
   end,
   loop(Gateway, PerformerSocket).
+
+
+main() ->
+  {Gateway, Port, GatewayChannel, PerformerChannel} = config:read(),
+  io:format("~w~n", [Gateway]),
+  spawn_link(gateway, start, [binary_to_atom(Gateway, unicode), GatewayChannel, PerformerChannel]),
+  accepter:listen(Gateway, Port).

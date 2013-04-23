@@ -3,7 +3,7 @@
 -author("dsociative").
 
 %% API
--export([tst/0, tst2/0, tst3/0]).
+-export([tst/0, tst2/0]).
 
 
 parse_first_command([Json|T]) ->
@@ -28,7 +28,4 @@ tst2() ->
   io:format("~w~n", [U]).
 
 
-tst3() ->
-  Gateway = gateway_test,
-  spawn_link(gateway, start, [Gateway, "ipc:///home/buildbot/jewels/testing/jewels_testing_gateway", "ipc:///home/buildbot/jewels/testing/jewels_testing_performer"]),
-  accepter:listen(Gateway, 10556).
+
