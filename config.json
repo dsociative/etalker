@@ -1,0 +1,6 @@
+{
+    "gateway_name": "jewels_testing",
+    "port": 10556,
+    "gateway_channel": "ipc://jewels_testing_gateway",
+    "performer_channel": "ipc://jewels_testing_performer"
+}
