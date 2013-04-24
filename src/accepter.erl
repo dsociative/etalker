@@ -26,7 +26,8 @@ spawn_talk(Gateway, ClientSocket) ->
 accept(Gateway, ServerSocket) ->
   case gen_tcp:accept(ServerSocket) of
     {ok, ClientSocket} ->
-      Gateway ! {accept, spawn_talk(Gateway, ClientSocket)};
+      Pid = spawn_talk(Gateway, ClientSocket),
+      Gateway ! {accept, Pid};
     {error, Reason} ->
       io:format(user,"Error accept: ~w~n", [Reason])
   end,

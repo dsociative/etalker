@@ -3,7 +3,7 @@
 -author("dsociative").
 
 %% API
--export([start/3, pid_pack/1, gateway_listen/1, main/0]).
+-export([start/2, pid_pack/1, gateway_listen/1, main/0]).
 -define(DISCONNECT_MSG, {[{<<"command">>, <<"user.disconnect">>}]}).
 
 
@@ -51,10 +51,9 @@ gateway_listen(GatewaySocket) ->
   gateway_listen(GatewaySocket).
 
 
-start(Gateway, GatewayChannel, PerformerChannel) ->
-  register(Gateway, self()),
+start(GatewayChannel, PerformerChannel) ->
   spawn_link(?MODULE, gateway_listen, [gateway_socket(GatewayChannel)]),
-  loop(Gateway, performer_socket(PerformerChannel)).
+  loop(performer_socket(PerformerChannel)).
 
 
 pid_pack(Pid) ->
@@ -69,7 +68,7 @@ send(Socket, Pid, Msg) ->
   erlzmq:send(Socket, pack_msg(Pid, Msg)).
 
 
-loop(Gateway, PerformerSocket) ->
+loop(PerformerSocket) ->
   receive
     {in, Pid, Msg} ->
       io:format("~p~n", [Msg]),
@@ -77,11 +76,10 @@ loop(Gateway, PerformerSocket) ->
     {closed, Pid} ->
       send(PerformerSocket, Pid, ?DISCONNECT_MSG)
   end,
-  loop(Gateway, PerformerSocket).
+  loop(PerformerSocket).
 
 
 main() ->
-  {Gateway, Port, GatewayChannel, PerformerChannel} = config:read(),
-  io:format("~w~n", [Gateway]),
-  spawn_link(gateway, start, [binary_to_atom(Gateway, unicode), GatewayChannel, PerformerChannel]),
-  accepter:listen(Gateway, Port).
+  {Port, GatewayChannel, PerformerChannel} = config:read(),
+  Pid = spawn_link(gateway, start, [GatewayChannel, PerformerChannel]),
+  accepter:listen(Pid, Port).

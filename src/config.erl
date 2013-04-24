@@ -10,7 +10,6 @@ read() ->
   {ok, Data} = file:read_file("config.json"),
   {Json} = jiffy:decode(Data),
   {
-    proplists:get_value(<<"gateway_name">>, Json),
     proplists:get_value(<<"port">>, Json),
     proplists:get_value(<<"gateway_channel">>, Json),
     proplists:get_value(<<"performer_channel">>, Json)
