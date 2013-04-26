@@ -26,7 +26,6 @@ gateway_socket(Channel) ->
 
 
 unpack_pid(Pid) ->
-  io:format("Pids ~p~n", [Pid]),
   list_to_pid(binary_to_list(Pid)).
 
 
@@ -46,7 +45,6 @@ process_requests([{Request}|T]) ->
 
 gateway_listen(GatewaySocket) ->
   {ok, Requests} = erlzmq:recv(GatewaySocket),
-  io:format("Req gateway ~p~n", [Requests]),
   process_requests(jiffy:decode(Requests)),
   gateway_listen(GatewaySocket).
 
@@ -71,7 +69,6 @@ send(Socket, Pid, Msg) ->
 loop(PerformerSocket) ->
   receive
     {in, Pid, Msg} ->
-      io:format("~p~n", [Msg]),
       send(PerformerSocket, Pid, Msg);
     {closed, Pid} ->
       send(PerformerSocket, Pid, ?DISCONNECT_MSG)

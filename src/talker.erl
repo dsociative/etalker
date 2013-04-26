@@ -19,7 +19,6 @@ requests(Gateway, ClientSocket, Pid) ->
 responses(Gateway, ClientSocket) ->
   receive
     {out, Msg} ->
-      io:format("Out ~p~n", [Msg]),
       gen_tcp:send(ClientSocket, jiffy:encode({Msg})),
       responses(Gateway, ClientSocket);
     {'EXIT', _, _} ->
