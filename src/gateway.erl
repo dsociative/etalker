@@ -35,11 +35,21 @@ split_request(Request) ->
   {Pids, Msg}.
 
 
+unpack_and_send(BPid, Msg) ->
+  Pid = unpack_pid(BPid),
+  case is_pid(Pid) of
+    true ->
+      Pid ! {out, Msg};
+    false ->
+      io:format("Bad Pid ~w~n", [Pid])
+  end.
+
+
 process_requests([]) ->
   0;
 process_requests([{Request}|T]) ->
   {Pids, Msg} = split_request(Request),
-  [unpack_pid(Pid) ! {out, Msg} || Pid <- Pids],
+  [unpack_and_send(Pid, Msg) || Pid <- Pids],
   process_requests(T).
 
 
