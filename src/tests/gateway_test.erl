@@ -95,13 +95,18 @@ send(Msg) ->
   erlzmq:send(Socket, Msg).
 
 
-request_by_zmq_test() ->
-  Msg = <<"Сообщение !">>,
-  start(),
-  Pid = gateway:pid_pack(self()),
-  Json = [{[{<<"cids">>, [Pid, Pid]}, {<<"Msg">>, Msg}]}, {[{<<"cids">>, [Pid]}, {<<"Msg">>, Msg}]}],
-  send(jiffy:encode(Json)),
-  ExpectedMsg = [{<<"Msg">>, Msg}],
-  ?assertEqual(ExpectedMsg, get_msgs()),
-  ?assertEqual(ExpectedMsg, get_msgs()),
-  ?assertEqual(ExpectedMsg, get_msgs()).
+bad_pid_test() ->
+  gateway:unpack_and_send(<<"qweqeq">>, [{<<"Msg">>, <<"Сообщение !">>}]).
+
+
+
+%% request_by_zmq_test() ->
+%%   Msg = <<"Сообщение !">>,
+%%   start(),
+%%   Pid = gateway:pid_pack(self()),
+%%   Json = [{[{<<"cids">>, [Pid, Pid]}, {<<"Msg">>, Msg}]}, {[{<<"cids">>, [Pid]}, {<<"Msg">>, Msg}]}],
+%%   send(jiffy:encode(Json)),
+%%   ExpectedMsg = [{<<"Msg">>, Msg}],
+%%   ?assertEqual(ExpectedMsg, get_msgs()),
+%%   ?assertEqual(ExpectedMsg, get_msgs()),
+%%   ?assertEqual(ExpectedMsg, get_msgs()).

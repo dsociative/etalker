@@ -3,7 +3,7 @@
 -author("dsociative").
 
 %% API
--export([start/2, pid_pack/1, gateway_listen/1, main/0]).
+-export([start/2, pid_pack/1, gateway_listen/1, main/0, unpack_and_send/2]).
 -define(DISCONNECT_MSG, {[{<<"command">>, <<"user.disconnect">>}]}).
 
 
@@ -36,12 +36,17 @@ split_request(Request) ->
 
 
 unpack_and_send(BPid, Msg) ->
-  Pid = unpack_pid(BPid),
-  case is_pid(Pid) of
-    true ->
-      Pid ! {out, Msg};
-    false ->
-      io:format("Bad Pid ~w~n", [Pid])
+  try unpack_pid(BPid) of
+    Pid ->
+      case is_pid(Pid) of
+        true ->
+          Pid ! {out, Msg};
+        false ->
+          io:format("Bad Pid ~w~n", [Pid])
+      end
+  catch
+      error:badarg ->
+        error_logger:warning_msg("Error PID ~p ~s ~n", [BPid, jiffy:encode({Msg})])
   end.
 
 
